@@ -8,7 +8,7 @@ public class GameSession {
 
     public void startGame() {
         sessionStartTime = TimeUtils.millis();
-        nextTrashSpawnTime = (long) (sessionStartTime + GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN * getTrashPeriodCoolDown());
+        nextTrashSpawnTime = sessionStartTime + GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN;
     }
 
     public boolean shouldSpawnTrash() {
