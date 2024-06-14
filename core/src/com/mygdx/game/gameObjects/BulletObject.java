@@ -1,4 +1,4 @@
-package com.mygdx.game.objects;
+package com.mygdx.game.gameObjects;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -21,7 +21,7 @@ public class BulletObject extends GameObject {
     public boolean deleteIfNeed() {
         boolean isNeed = getY() - height / 2 > GameSettings.SCREEN_HEIGHT || wasHit;
         if (isNeed)
-            body.destroyFixture(body.getFixtureList().get(0));
+            dispose();
         return isNeed;
     }
 }

@@ -11,9 +11,14 @@ import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSession;
 import com.mygdx.game.GameSettings;
 import com.mygdx.game.SpaceInvadersGame;
-import com.mygdx.game.objects.BulletObject;
-import com.mygdx.game.objects.ShipObject;
-import com.mygdx.game.objects.TrashObject;
+import com.mygdx.game.UIObjects.ButtonView;
+import com.mygdx.game.UIObjects.ImageView;
+import com.mygdx.game.UIObjects.MovingBackgroundView;
+import com.mygdx.game.UIObjects.TextView;
+import com.mygdx.game.gameObjects.BulletObject;
+import com.mygdx.game.UIObjects.LineView;
+import com.mygdx.game.gameObjects.ShipObject;
+import com.mygdx.game.gameObjects.TrashObject;
 
 import java.util.ArrayList;
 
@@ -26,6 +31,12 @@ public class GameScreen extends ScreenAdapter {
     ArrayList<TrashObject> trashArray;
     ArrayList<BulletObject> bulletArray;
 
+    MovingBackgroundView backgroundView;
+    ImageView topBlackoutView;
+    LineView lineView;
+    TextView scoreTextView;
+    ButtonView playButtonView;
+
     public GameScreen(SpaceInvadersGame game) {
         this.game = game;
         session = new GameSession();
@@ -36,6 +47,13 @@ public class GameScreen extends ScreenAdapter {
                 GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
         trashArray = new ArrayList<>();
         bulletArray = new ArrayList<>();
+
+        backgroundView = new MovingBackgroundView(GameSettings.BACKGROUND_SPEED, GameResources.BACKGROUND_IMG_PATH);
+        topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
+        lineView = new LineView(1215, GameResources.LIFE_IMG_PATH);
+        lineView.setHp(ship.getHp());
+        scoreTextView = new TextView(game.getFont(), 50, 1215, "Score: 0");
+        playButtonView = new ButtonView(605, 1200, 46, 54, GameResources.PLAY_BUTTON_PATH);
     }
 
     @Override
@@ -58,8 +76,15 @@ public class GameScreen extends ScreenAdapter {
 
         updateTrash();
         updateBullet();
+        lineView.setHp(ship.getHp());
 
         batch.begin();
+        backgroundView.draw(batch);
+        topBlackoutView.draw(batch);
+        lineView.draw(batch);
+        scoreTextView.draw(batch);
+        playButtonView.draw(batch);
+
         ship.draw(batch);
         for (TrashObject trash : trashArray)
             trash.draw(batch);
@@ -76,6 +101,12 @@ public class GameScreen extends ScreenAdapter {
             trash.dispose();
         for (BulletObject bullet : bulletArray)
             bullet.dispose();
+
+        lineView.dispose();
+        topBlackoutView.dispose();
+        backgroundView.dispose();
+        scoreTextView.dispose();
+        playButtonView.dispose();
     }
 
     private void updateTrash() {

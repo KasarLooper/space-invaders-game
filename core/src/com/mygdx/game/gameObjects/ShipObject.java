@@ -1,4 +1,4 @@
-package com.mygdx.game.objects;
+package com.mygdx.game.gameObjects;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
@@ -46,6 +46,10 @@ public class ShipObject extends GameObject {
                         (y - getY()) * GameSettings.SHIP_FORCE_RATIO),
                 true
         );
+    }
+
+    public int getHp() {
+        return hp;
     }
 
     private void putInFrame() {

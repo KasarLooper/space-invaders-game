@@ -1,4 +1,4 @@
-package com.mygdx.game.objects;
+package com.mygdx.game.gameObjects;
 
 import static com.mygdx.game.GameSettings.SCALE;
 
@@ -34,6 +34,7 @@ public abstract class GameObject {
 
     public void dispose() {
         texture.dispose();
+        body.destroyFixture(body.getFixtureList().get(0));
     }
 
     public int getX() {

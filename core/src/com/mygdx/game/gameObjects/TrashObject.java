@@ -1,6 +1,4 @@
-package com.mygdx.game.objects;
-
-import static com.mygdx.game.GameSettings.SCALE;
+package com.mygdx.game.gameObjects;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
@@ -29,9 +27,8 @@ public class TrashObject extends GameObject {
     @Override
     public boolean deleteIfNeed() {
         boolean isNeed = hp <= 0 || getY() < -height / 2;
-        if (isNeed) {
-            body.destroyFixture(body.getFixtureList().get(0));
-        }
+        if (isNeed)
+            dispose();
         return isNeed;
     }
 
