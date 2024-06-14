@@ -7,11 +7,23 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameSettings;
 
 public class ShipObject extends GameObject {
+    private int hp;
     private long lastShootTime;
 
-    public ShipObject(int x, int y, int width, int height, String texturePath, World world) {
-        super(x, y, width, height, texturePath, world);
+    public ShipObject(int x, int y, int width, int height, String texturePath, World world, short cBits) {
+        super(x, y, width, height, texturePath, world, cBits);
         body.setLinearDamping(10);
+        hp = 3;
+    }
+
+    @Override
+    public void hit() {
+        hp--;
+    }
+
+    @Override
+    public boolean deleteIfNeed() {
+        return hp <= 0;
     }
 
     public boolean needToShoot() {

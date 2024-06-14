@@ -33,7 +33,7 @@ public class GameScreen extends ScreenAdapter {
         camera = game.getCamera();
         ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2, 150,
                 GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
-                GameResources.SHIP_IMG_PATH, game.getWorld());
+                GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
         trashArray = new ArrayList<>();
         bulletArray = new ArrayList<>();
     }
@@ -43,7 +43,6 @@ public class GameScreen extends ScreenAdapter {
         session.startGame();
     }
 
-    @SuppressWarnings("NewApi")
     @Override
     public void render(float delta) {
         game.stepWorld();
@@ -82,18 +81,19 @@ public class GameScreen extends ScreenAdapter {
     private void updateTrash() {
         if (session.shouldSpawnTrash()) {
             TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
-                    GameResources.TRASH_IMG_PATH, game.getWorld());
+                    GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.TRASH_BIT);
             trashArray.add(trashObject);
         }
-        trashArray.removeIf(TrashObject::isOutFrame);
+        trashArray.removeIf(TrashObject::deleteIfNeed);
     }
 
     private void updateBullet() {
         if (ship.needToShoot()) {
             BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
-                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld());
+                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld(),
+                    GameSettings.BULLET_BIT);
             bulletArray.add(bulletObject);
         }
-        bulletArray.removeIf(BulletObject::hasToBeDestroyed);
+        bulletArray.removeIf(BulletObject::deleteIfNeed);
     }
 }
