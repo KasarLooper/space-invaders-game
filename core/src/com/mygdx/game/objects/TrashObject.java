@@ -21,8 +21,6 @@ public class TrashObject extends GameObject {
     @Override
     public void draw(Batch batch) {
         super.draw(batch);
-        //System.out.printf("Position: (%d; %d)\n", getX(), getY());
-        //System.out.printf("Speed: (%f; %f)\n", (body.getLinearVelocity().x / SCALE), (body.getLinearVelocity().y / SCALE));
     }
 
     public boolean isInFrame() {

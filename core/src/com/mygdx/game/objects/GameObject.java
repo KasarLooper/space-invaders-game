@@ -22,7 +22,6 @@ public class GameObject {
         this.height = height;
         texture = new Texture(texturePath);
         body = createBody(x, y, world);
-        body.setLinearDamping(10f);
     }
 
     public void draw(Batch batch) {
@@ -49,14 +48,14 @@ public class GameObject {
         body.setTransform(body.getPosition().x, y * SCALE, 0);
     }
 
-    private Body createBody(int x, int y, World world) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.fixedRotation = true;
-        Body body = world.createBody(bodyDef);
+    private Body createBody(float x, float y, World world) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.fixedRotation = true;
+        Body body = world.createBody(def);
 
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(Math.max(width, height) / 2f);
+        circleShape.setRadius(Math.max(width, height) * SCALE / 2f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;

@@ -23,6 +23,7 @@ public class GameScreen extends ScreenAdapter {
     OrthographicCamera camera;
     ShipObject ship;
     ArrayList<TrashObject> trashArray;
+    TrashObject trash;
 
     public GameScreen(SpaceInvadersGame game) {
         this.game = game;
@@ -40,6 +41,7 @@ public class GameScreen extends ScreenAdapter {
         session.startGame();
     }
 
+    @SuppressWarnings("NewApi")
     @Override
     public void render(float delta) {
         game.stepWorld();
@@ -49,13 +51,21 @@ public class GameScreen extends ScreenAdapter {
         ScreenUtils.clear(Color.CLEAR);
 
         if (Gdx.input.isTouched()) {
-            System.out.printf("(%d, %d)\n", Gdx.input.getX(), GameSettings.SCREEN_HEIGHT - Gdx.input.getY());
             Vector3 vector3 = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             ship.move(vector3.x, vector3.y);
         }
 
+        if (session.shouldSpawnTrash()) {
+            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
+                    GameResources.TRASH_IMG_PATH, game.getWorld());
+            trashArray.add(trashObject);
+        }
+        trashArray.removeIf(trash -> !trash.isInFrame());
+
         batch.begin();
         ship.draw(batch);
+        for (TrashObject trash : trashArray)
+            trash.draw(batch);
         batch.end();
     }
 
@@ -63,5 +73,8 @@ public class GameScreen extends ScreenAdapter {
     public void dispose() {
         ship.dispose();
         batch.dispose();
+        for (TrashObject trash : trashArray)
+            trash.dispose();
+        trash.dispose();
     }
 }

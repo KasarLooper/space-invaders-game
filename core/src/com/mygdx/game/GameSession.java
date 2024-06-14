@@ -13,7 +13,7 @@ public class GameSession {
 
     public boolean shouldSpawnTrash() {
         if (TimeUtils.millis() >= nextTrashSpawnTime) {
-            nextTrashSpawnTime += (long) (GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN * getTrashPeriodCoolDown());
+            nextTrashSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN * getTrashPeriodCoolDown());
             return true;
         }
         return false;
