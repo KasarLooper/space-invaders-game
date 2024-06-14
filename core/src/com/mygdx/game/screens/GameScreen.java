@@ -11,6 +11,7 @@ import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSession;
 import com.mygdx.game.GameSettings;
 import com.mygdx.game.SpaceInvadersGame;
+import com.mygdx.game.objects.BulletObject;
 import com.mygdx.game.objects.ShipObject;
 import com.mygdx.game.objects.TrashObject;
 
@@ -23,7 +24,7 @@ public class GameScreen extends ScreenAdapter {
     OrthographicCamera camera;
     ShipObject ship;
     ArrayList<TrashObject> trashArray;
-    TrashObject trash;
+    ArrayList<BulletObject> bulletArray;
 
     public GameScreen(SpaceInvadersGame game) {
         this.game = game;
@@ -34,6 +35,7 @@ public class GameScreen extends ScreenAdapter {
                 GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
                 GameResources.SHIP_IMG_PATH, game.getWorld());
         trashArray = new ArrayList<>();
+        bulletArray = new ArrayList<>();
     }
 
     @Override
@@ -55,17 +57,15 @@ public class GameScreen extends ScreenAdapter {
             ship.move(vector3.x, vector3.y);
         }
 
-        if (session.shouldSpawnTrash()) {
-            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
-                    GameResources.TRASH_IMG_PATH, game.getWorld());
-            trashArray.add(trashObject);
-        }
-        trashArray.removeIf(trash -> !trash.isInFrame());
+        updateTrash();
+        updateBullet();
 
         batch.begin();
         ship.draw(batch);
         for (TrashObject trash : trashArray)
             trash.draw(batch);
+        for (BulletObject bullet : bulletArray)
+            bullet.draw(batch);
         batch.end();
     }
 
@@ -75,6 +75,25 @@ public class GameScreen extends ScreenAdapter {
         batch.dispose();
         for (TrashObject trash : trashArray)
             trash.dispose();
-        trash.dispose();
+        for (BulletObject bullet : bulletArray)
+            bullet.dispose();
+    }
+
+    private void updateTrash() {
+        if (session.shouldSpawnTrash()) {
+            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
+                    GameResources.TRASH_IMG_PATH, game.getWorld());
+            trashArray.add(trashObject);
+        }
+        trashArray.removeIf(TrashObject::isOutFrame);
+    }
+
+    private void updateBullet() {
+        if (ship.needToShoot()) {
+            BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
+                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld());
+            bulletArray.add(bulletObject);
+        }
+        bulletArray.removeIf(BulletObject::hasToBeDestroyed);
     }
 }

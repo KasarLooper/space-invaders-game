@@ -23,7 +23,7 @@ public class TrashObject extends GameObject {
         super.draw(batch);
     }
 
-    public boolean isInFrame() {
-        return getY() > -height / 2;
+    public boolean isOutFrame() {
+        return getY() < -height / 2;
     }
 }

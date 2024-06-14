@@ -2,20 +2,38 @@ package com.mygdx.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.GameSettings;
 
 public class ShipObject extends GameObject {
+    private long lastShootTime;
+
     public ShipObject(int x, int y, int width, int height, String texturePath, World world) {
         super(x, y, width, height, texturePath, world);
         body.setLinearDamping(10);
+    }
+
+    public boolean needToShoot() {
+        if (TimeUtils.millis() - lastShootTime >= GameSettings.SHOOTING_COOL_DOWN) {
+            lastShootTime = TimeUtils.millis();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void draw(Batch batch) {
         putInFrame();
         super.draw(batch);
+    }
+
+    public void move(float x, float y) {
+        body.applyForceToCenter(new Vector2(
+                        (x - getX()) * GameSettings.SHIP_FORCE_RATIO,
+                        (y - getY()) * GameSettings.SHIP_FORCE_RATIO),
+                true
+        );
     }
 
     private void putInFrame() {
@@ -27,13 +45,5 @@ public class ShipObject extends GameObject {
             setX(GameSettings.SCREEN_WIDTH);
         if (getX() > (GameSettings.SCREEN_WIDTH + width / 2f))
             setX(0);
-    }
-
-    public void move(float x, float y) {
-        body.applyForceToCenter(new Vector2(
-                        (x - getX()) * GameSettings.SHIP_FORCE_RATIO,
-                        (y - getY()) * GameSettings.SHIP_FORCE_RATIO),
-                true
-        );
     }
 }
