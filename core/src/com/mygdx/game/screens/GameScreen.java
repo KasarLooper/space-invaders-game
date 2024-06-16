@@ -25,6 +25,7 @@ import com.mygdx.game.gameObjects.TrashObject;
 import com.mygdx.game.managers.MemoryManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class GameScreen extends ScreenAdapter {
     int score = 0;
@@ -236,24 +237,28 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateTrash() {
-        for (int i = 0; i < trashArray.size(); i++) {
-            if (trashArray.get(i).hasToBeDestroyed()) {
-                if (!trashArray.get(i).isAlive()) {
-                    score += trashArray.get(i).getPoints();
+        Iterator<TrashObject> iterator = trashArray.iterator();
+        while (iterator.hasNext()) {
+            TrashObject current = iterator.next();
+            if (current.hasToBeDestroyed()) {
+                if (!current.isAlive()) {
+                    score += current.getPoints();
                     scoreTextView.setText("Score: " + score);
                     game.getAudioManager().explode();
                 }
-                game.getWorld().destroyBody(trashArray.get(i).getBody());
-                trashArray.remove(i--);
+                game.getWorld().destroyBody(current.getBody());
+                iterator.remove();
             }
         }
     }
 
     private void updateBullets() {
-        for (int i = 0; i < bulletArray.size(); i++) {
-            if (bulletArray.get(i).hasToBeDestroyed()) {
-                game.getWorld().destroyBody(bulletArray.get(i).getBody());
-                bulletArray.remove(i--);
+        Iterator<BulletObject> iterator = bulletArray.iterator();
+        while (iterator.hasNext()) {
+            BulletObject current = iterator.next();
+            if (current.hasToBeDestroyed()) {
+                game.getWorld().destroyBody(current.getBody());
+                iterator.remove();
             }
         }
     }
