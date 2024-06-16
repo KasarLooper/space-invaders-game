@@ -21,9 +21,8 @@ public class ShipObject extends GameObject {
         hp--;
     }
 
-    @Override
-    public boolean deleteIfNeed() {
-        return hp <= 0;
+    public boolean isAlive() {
+        return hp > 0;
     }
 
     public boolean needToShoot() {

@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-public abstract class GameObject {
+public class GameObject {
     short cBits;
     Body body;
     Texture texture;
@@ -25,8 +25,8 @@ public abstract class GameObject {
         body = createBody(x, y, world);
     }
 
-    public abstract void hit();
-    public abstract boolean deleteIfNeed();
+    public void hit() {
+    }
 
     public void draw(Batch batch) {
         batch.draw(texture, getX() - width / 2f, getY() - height / 2f, width, height);
@@ -73,6 +73,10 @@ public abstract class GameObject {
         circleShape.dispose();
 
         body.setTransform(x * SCALE, y * SCALE, 0);
+        return body;
+    }
+
+    public Body getBody() {
         return body;
     }
 }

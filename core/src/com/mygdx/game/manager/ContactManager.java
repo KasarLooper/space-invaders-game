@@ -1,10 +1,11 @@
-package com.mygdx.game;
+package com.mygdx.game.manager;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.mygdx.game.GameSettings;
 import com.mygdx.game.gameObjects.GameObject;
 
 public class ContactManager implements ContactListener {

@@ -10,21 +10,26 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSession;
 import com.mygdx.game.GameSettings;
-import com.mygdx.game.SpaceInvadersGame;
+import com.mygdx.game.GameState;
+import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.UIObjects.ButtonView;
 import com.mygdx.game.UIObjects.ImageView;
 import com.mygdx.game.UIObjects.MovingBackgroundView;
+import com.mygdx.game.UIObjects.RecordsListView;
 import com.mygdx.game.UIObjects.TextView;
 import com.mygdx.game.gameObjects.BulletObject;
 import com.mygdx.game.UIObjects.LineView;
+import com.mygdx.game.gameObjects.GameObject;
 import com.mygdx.game.gameObjects.ShipObject;
 import com.mygdx.game.gameObjects.TrashObject;
+import com.mygdx.game.manager.MemoryManager;
 
 import java.util.ArrayList;
 
 public class GameScreen extends ScreenAdapter {
+    int score = 0;
     SpriteBatch batch;
-    SpaceInvadersGame game;
+    MyGdxGame game;
     GameSession session;
     OrthographicCamera camera;
     ShipObject ship;
@@ -37,10 +42,19 @@ public class GameScreen extends ScreenAdapter {
     TextView scoreTextView;
     ButtonView playButtonView;
 
-    public GameScreen(SpaceInvadersGame game) {
+    ImageView fullBlackoutView;
+    ButtonView continueButton;
+    ButtonView homeButton;
+    TextView pauseTextView;
+
+    TextView recordsTextView;
+    RecordsListView tableRecords;
+    ButtonView homeButton2;
+
+    public GameScreen(MyGdxGame game) {
         this.game = game;
         session = new GameSession();
-        batch = new SpriteBatch();
+        batch = game.getBatch();
         camera = game.getCamera();
         ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2, 150,
                 GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
@@ -52,8 +66,17 @@ public class GameScreen extends ScreenAdapter {
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
         lineView = new LineView(1215, GameResources.LIFE_IMG_PATH);
         lineView.setHp(ship.getHp());
-        scoreTextView = new TextView(game.getFont(), 50, 1215, "Score: 0");
-        playButtonView = new ButtonView(605, 1200, 46, 54, GameResources.PLAY_BUTTON_PATH);
+        scoreTextView = new TextView(game.getWhiteFont(), 50, 1215, "Score: 0");
+        playButtonView = new ButtonView(605, 1200, 46, 54, GameResources.PLAY_BUTTON_IMG_PATH);
+
+        fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_ING_PATH);
+        continueButton = new ButtonView(160, 650, 160, 80, GameResources.SHORT_BUTTON_IMG_PATH, "Continue", game.getBlackFont());
+        homeButton = new ButtonView(380, 650, 160, 80, GameResources.SHORT_BUTTON_IMG_PATH, "Home", game.getBlackFont());
+        pauseTextView = new TextView(game.getBigWhiteFont(), 280, 860, "Pause");
+
+        recordsTextView = new TextView(game.getBigWhiteFont(), 210, 960, "Last records");
+        tableRecords = new RecordsListView(game.getWhiteFont(), 800);
+        homeButton2 = new ButtonView(280, 400, 160, 80, GameResources.SHORT_BUTTON_IMG_PATH, "Home", game.getBlackFont());
     }
 
     @Override
@@ -63,22 +86,46 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        game.stepWorld();
+        handleInput();
+        if (session.getState() == GameState.PLAYING)
+            updateObjects();
+        draw();
+    }
 
+    private void updateObjects() {
+        if (session.shouldSpawnTrash()) {
+            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
+                    GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.TRASH_BIT);
+            trashArray.add(trashObject);
+        }
+
+        if (ship.needToShoot()) {
+            BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
+                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld(),
+                    GameSettings.BULLET_BIT);
+            bulletArray.add(bulletObject);
+            game.getAudioManager().shoot();
+        }
+
+        if (!ship.isAlive()) {
+            session.endGame(score);
+            tableRecords.setRecords(MemoryManager.loadTableRecords());
+        }
+
+        updateTrash();
+        updateBullets();
+        game.stepWorld();
+        lineView.setHp(ship.getHp());
+        backgroundView.move();
+    }
+
+    private void draw() {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         ScreenUtils.clear(Color.CLEAR);
 
-        if (Gdx.input.isTouched()) {
-            Vector3 vector3 = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            ship.move(vector3.x, vector3.y);
-        }
-
-        updateTrash();
-        updateBullet();
-        lineView.setHp(ship.getHp());
-
         batch.begin();
+
         backgroundView.draw(batch);
         topBlackoutView.draw(batch);
         lineView.draw(batch);
@@ -90,6 +137,21 @@ public class GameScreen extends ScreenAdapter {
             trash.draw(batch);
         for (BulletObject bullet : bulletArray)
             bullet.draw(batch);
+
+        if (session.getState() == GameState.PAUSED) {
+            fullBlackoutView.draw(batch);
+            continueButton.draw(batch);
+            homeButton.draw(batch);
+            pauseTextView.draw(batch);
+        }
+
+        if (session.getState() == GameState.ENDED) {
+            fullBlackoutView.draw(batch);
+            recordsTextView.draw(batch);
+            tableRecords.draw(batch);
+            homeButton2.draw(batch);
+        }
+
         batch.end();
     }
 
@@ -107,24 +169,92 @@ public class GameScreen extends ScreenAdapter {
         backgroundView.dispose();
         scoreTextView.dispose();
         playButtonView.dispose();
+
+        fullBlackoutView.dispose();
+        continueButton.dispose();
+        homeButton.dispose();
+        pauseTextView.dispose();
+
+        recordsTextView.dispose();
+        tableRecords.dispose();
+        homeButton2.dispose();
+    }
+
+    private void handleInput() {
+        if (session.isFreezeInput()) return;
+        switch (session.getState()) {
+            case PLAYING: {
+                if (Gdx.input.isTouched()) {
+                    Vector3 touch = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                    if (playButtonView.isHit(touch.x, touch.y)) {
+                        session.pauseGame();
+                        break;
+                    } else if (!topBlackoutView.isHit(touch.x, touch.y))
+                        ship.move(touch.x, touch.y);
+                }
+                break;
+            }
+            case PAUSED: {
+                if (Gdx.input.isTouched()) {
+                    Vector3 touch = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                    if (continueButton.isHit(touch.x, touch.y))
+                        session.resumeGame();
+                    if (homeButton.isHit(touch.x, touch.y)) {
+                        session.endGame(score);
+                        game.returnToMainMenu();
+                    }
+                }
+                break;
+            }
+            case ENDED: {
+                if (Gdx.input.justTouched()) {
+                    Vector3 touch = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+                    if (homeButton2.isHit(touch.x, touch.y)) {
+                        game.returnToMainMenu();
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public void restartGame() {
+        for (GameObject object : trashArray)
+            game.getWorld().destroyBody(object.getBody());
+        for (GameObject object : bulletArray)
+            game.getWorld().destroyBody(object.getBody());
+        game.getWorld().destroyBody(ship.getBody());
+
+        ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2, 150,
+                GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
+                GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
+        trashArray = new ArrayList<>();
+        bulletArray = new ArrayList<>();
+        session = new GameSession();
+        score = 0;
+        scoreTextView.setText("Score: " + score);
     }
 
     private void updateTrash() {
-        if (session.shouldSpawnTrash()) {
-            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
-                    GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.TRASH_BIT);
-            trashArray.add(trashObject);
+        for (int i = 0; i < trashArray.size(); i++) {
+            if (trashArray.get(i).hasToBeDestroyed()) {
+                if (!trashArray.get(i).isAlive()) {
+                    score += trashArray.get(i).getPoints();
+                    scoreTextView.setText("Score: " + score);
+                    game.getAudioManager().explode();
+                }
+                game.getWorld().destroyBody(trashArray.get(i).getBody());
+                trashArray.remove(i--);
+            }
         }
-        trashArray.removeIf(TrashObject::deleteIfNeed);
     }
 
-    private void updateBullet() {
-        if (ship.needToShoot()) {
-            BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
-                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld(),
-                    GameSettings.BULLET_BIT);
-            bulletArray.add(bulletObject);
+    private void updateBullets() {
+        for (int i = 0; i < bulletArray.size(); i++) {
+            if (bulletArray.get(i).hasToBeDestroyed()) {
+                game.getWorld().destroyBody(bulletArray.get(i).getBody());
+                bulletArray.remove(i--);
+            }
         }
-        bulletArray.removeIf(BulletObject::deleteIfNeed);
     }
 }

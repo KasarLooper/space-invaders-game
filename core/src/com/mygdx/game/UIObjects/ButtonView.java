@@ -32,7 +32,7 @@ public class ButtonView extends View {
     public void draw(SpriteBatch batch) {
         batch.draw(texture, x, y, width, height);
         if (font != null) {
-            //
+            font.draw(batch, text, textX, textY);
         }
     }
 

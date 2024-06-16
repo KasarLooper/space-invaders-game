@@ -19,17 +19,21 @@ public class TrashObject extends GameObject {
         hp = 1;
     }
 
+    public int getPoints() {
+        return 1;
+    }
+
     @Override
     public void hit() {
         hp--;
     }
 
-    @Override
-    public boolean deleteIfNeed() {
-        boolean isNeed = hp <= 0 || getY() < -height / 2;
-        if (isNeed)
-            dispose();
-        return isNeed;
+    public boolean isAlive() {
+        return hp > 0;
+    }
+
+    public boolean hasToBeDestroyed() {
+        return hp <= 0 || getY() < -height / 2;
     }
 
     @Override

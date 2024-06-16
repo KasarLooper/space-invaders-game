@@ -18,10 +18,7 @@ public class BulletObject extends GameObject {
         wasHit = true;
     }
 
-    public boolean deleteIfNeed() {
-        boolean isNeed = getY() - height / 2 > GameSettings.SCREEN_HEIGHT || wasHit;
-        if (isNeed)
-            dispose();
-        return isNeed;
+    public boolean hasToBeDestroyed() {
+        return getY() - height / 2 > GameSettings.SCREEN_HEIGHT || wasHit;
     }
 }

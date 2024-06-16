@@ -21,7 +21,6 @@ public class MovingBackgroundView extends View {
     public void draw(SpriteBatch batch) {
         batch.draw(texture, 0, y1);
         batch.draw(texture, 0, y2);
-        move();
     }
 
     public void move() {

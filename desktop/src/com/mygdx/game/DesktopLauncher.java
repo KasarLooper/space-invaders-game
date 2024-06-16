@@ -2,7 +2,6 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.mygdx.game.SpaceInvadersGame;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
@@ -11,6 +10,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setWindowedMode(GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
 		config.setTitle("space-invaders-game");
-		new Lwjgl3Application(new SpaceInvadersGame(), config);
+		new Lwjgl3Application(new MyGdxGame(), config);
 	}
 }
