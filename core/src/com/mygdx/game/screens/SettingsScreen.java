@@ -12,7 +12,7 @@ import com.mygdx.game.UIObjects.ButtonView;
 import com.mygdx.game.UIObjects.ImageView;
 import com.mygdx.game.UIObjects.MovingBackgroundView;
 import com.mygdx.game.UIObjects.TextView;
-import com.mygdx.game.manager.MemoryManager;
+import com.mygdx.game.managers.MemoryManager;
 
 public class SettingsScreen extends ScreenAdapter {
     MyGdxGame game;

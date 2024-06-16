@@ -1,9 +1,8 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mygdx.game.manager.MemoryManager;
+import com.mygdx.game.managers.MemoryManager;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
 public class GameSession {

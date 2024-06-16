@@ -22,7 +22,7 @@ import com.mygdx.game.UIObjects.LineView;
 import com.mygdx.game.gameObjects.GameObject;
 import com.mygdx.game.gameObjects.ShipObject;
 import com.mygdx.game.gameObjects.TrashObject;
-import com.mygdx.game.manager.MemoryManager;
+import com.mygdx.game.managers.MemoryManager;
 
 import java.util.ArrayList;
 

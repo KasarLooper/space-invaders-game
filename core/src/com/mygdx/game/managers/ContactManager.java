@@ -1,4 +1,4 @@
-package com.mygdx.game.manager;
+package com.mygdx.game.managers;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
