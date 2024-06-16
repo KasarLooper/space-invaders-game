@@ -11,21 +11,29 @@ public class TrashObject extends GameObject {
     static Random random = new Random();
     static int paddingHorizontal = 30;
     private int hp;
+    private int points;
+    private boolean hasPoints;
 
     public TrashObject(int width, int height, String texturePath, World world, short cBits) {
         super(width / 2 + paddingHorizontal + random.nextInt(GameSettings.SCREEN_WIDTH - 2 * paddingHorizontal - width),
                 GameSettings.SCREEN_HEIGHT + height / 2, width, height, texturePath, world, cBits);
         body.setLinearVelocity(new Vector2(0, -GameSettings.TRASH_VELOCITY));
+        hasPoints = true;
         hp = 1;
+        points = 1;
     }
 
     public int getPoints() {
-        return 1;
+        return hasPoints ? points : 0;
     }
 
     @Override
-    public void hit() {
-        hp--;
+    public void hit(GameObject other) {
+        if (other instanceof ShipObject) {
+            hp = 0;
+            hasPoints = false;
+        }
+        else hp--;
     }
 
     public boolean isAlive() {

@@ -2,6 +2,7 @@ package com.mygdx.game.gameObjects;
 
 import static com.mygdx.game.GameSettings.SCALE;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -25,7 +26,7 @@ public class GameObject {
         body = createBody(x, y, world);
     }
 
-    public void hit() {
+    public void hit(GameObject other) {
     }
 
     public void draw(Batch batch) {

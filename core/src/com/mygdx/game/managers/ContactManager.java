@@ -19,8 +19,10 @@ public class ContactManager implements ContactListener {
 
         if (sum == GameSettings.TRASH_BIT + GameSettings.BULLET_BIT ||
                 sum == GameSettings.TRASH_BIT + GameSettings.SHIP_BIT) {
-            ((GameObject) fixA.getUserData()).hit();
-            ((GameObject) fixB.getUserData()).hit();
+            GameObject objectA = (GameObject) fixA.getUserData();
+            GameObject objectB = (GameObject) fixB.getUserData();
+            objectA.hit(objectB);
+            objectB.hit(objectA);
         }
     }
 

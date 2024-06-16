@@ -17,7 +17,7 @@ public class ShipObject extends GameObject {
     }
 
     @Override
-    public void hit() {
+    public void hit(GameObject other) {
         hp--;
     }
 

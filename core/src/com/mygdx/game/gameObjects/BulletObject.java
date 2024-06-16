@@ -14,7 +14,7 @@ public class BulletObject extends GameObject {
     }
 
     @Override
-    public void hit() {
+    public void hit(GameObject other) {
         wasHit = true;
     }
 
