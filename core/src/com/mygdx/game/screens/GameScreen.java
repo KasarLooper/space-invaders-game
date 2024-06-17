@@ -19,13 +19,17 @@ import com.mygdx.game.UIObjects.RecordsListView;
 import com.mygdx.game.UIObjects.TextView;
 import com.mygdx.game.gameObjects.BulletObject;
 import com.mygdx.game.UIObjects.LineView;
+import com.mygdx.game.gameObjects.FlyDownObject;
 import com.mygdx.game.gameObjects.GameObject;
+import com.mygdx.game.gameObjects.GunObject;
+import com.mygdx.game.gameObjects.MedicineObject;
 import com.mygdx.game.gameObjects.ShipObject;
 import com.mygdx.game.gameObjects.TrashObject;
 import com.mygdx.game.managers.MemoryManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 public class GameScreen extends ScreenAdapter {
     int score = 0;
@@ -34,7 +38,7 @@ public class GameScreen extends ScreenAdapter {
     GameSession session;
     OrthographicCamera camera;
     ShipObject ship;
-    ArrayList<TrashObject> trashArray;
+    ArrayList<FlyDownObject> flyDownArray;
     ArrayList<BulletObject> bulletArray;
 
     MovingBackgroundView backgroundView;
@@ -60,7 +64,7 @@ public class GameScreen extends ScreenAdapter {
         ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2, 150,
                 GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
                 GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
-        trashArray = new ArrayList<>();
+        flyDownArray = new ArrayList<>();
         bulletArray = new ArrayList<>();
 
         backgroundView = new MovingBackgroundView(GameSettings.BACKGROUND_SPEED, GameResources.BACKGROUND_IMG_PATH);
@@ -94,11 +98,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void updateObjects() {
-        if (session.shouldSpawnTrash()) {
-            TrashObject trashObject = new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
-                    GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.TRASH_BIT);
-            trashArray.add(trashObject);
-        }
+        if (session.shouldSpawnTrash())
+            flyDownArray.add(getFlyDownObject());
 
         if (ship.needToShoot()) {
             BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
@@ -113,11 +114,28 @@ public class GameScreen extends ScreenAdapter {
             tableRecords.setRecords(MemoryManager.loadTableRecords());
         }
 
-        updateTrash();
+        updateFlyDownObjects();
         updateBullets();
         game.stepWorld();
         lineView.setHp(ship.getHp());
         backgroundView.move();
+    }
+
+    Random rd = new Random();
+
+    private FlyDownObject getFlyDownObject() {
+        int n = rd.nextInt(6);
+        switch (n) {
+            case 0:
+                return new MedicineObject(GameSettings.MEDICINE_WIDTH, GameSettings.MEDICINE_HEIGHT,
+                        GameResources.MEDICINE_IMG_PATH, game.getWorld(), GameSettings.FLY_DOWN_OBJECT_BIT, ship.getX());
+            case 1:
+                return new GunObject(GameSettings.GUN_WIDTH, GameSettings.GUN_HEIGHT,
+                        GameResources.GUN_IMG_PATH, game.getWorld(), GameSettings.FLY_DOWN_OBJECT_BIT, ship.getX());
+            default:
+                return new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
+                        GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.FLY_DOWN_OBJECT_BIT);
+        }
     }
 
     private void draw() {
@@ -134,8 +152,8 @@ public class GameScreen extends ScreenAdapter {
         playButtonView.draw(batch);
 
         ship.draw(batch);
-        for (TrashObject trash : trashArray)
-            trash.draw(batch);
+        for (FlyDownObject object : flyDownArray)
+            object.draw(batch);
         for (BulletObject bullet : bulletArray)
             bullet.draw(batch);
 
@@ -160,8 +178,8 @@ public class GameScreen extends ScreenAdapter {
     public void dispose() {
         ship.dispose();
         batch.dispose();
-        for (TrashObject trash : trashArray)
-            trash.dispose();
+        for (FlyDownObject object : flyDownArray)
+            object.dispose();
         for (BulletObject bullet : bulletArray)
             bullet.dispose();
 
@@ -220,7 +238,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void restartGame() {
-        for (GameObject object : trashArray)
+        for (GameObject object : flyDownArray)
             game.getWorld().destroyBody(object.getBody());
         for (GameObject object : bulletArray)
             game.getWorld().destroyBody(object.getBody());
@@ -229,17 +247,17 @@ public class GameScreen extends ScreenAdapter {
         ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2, 150,
                 GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT,
                 GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
-        trashArray = new ArrayList<>();
+        flyDownArray = new ArrayList<>();
         bulletArray = new ArrayList<>();
         session = new GameSession();
         score = 0;
         scoreTextView.setText("Score: " + score);
     }
 
-    private void updateTrash() {
-        Iterator<TrashObject> iterator = trashArray.iterator();
+    private void updateFlyDownObjects() {
+        Iterator<FlyDownObject> iterator = flyDownArray.iterator();
         while (iterator.hasNext()) {
-            TrashObject current = iterator.next();
+            FlyDownObject current = iterator.next();
             if (current.hasToBeDestroyed()) {
                 if (!current.isAlive()) {
                     score += current.getPoints();

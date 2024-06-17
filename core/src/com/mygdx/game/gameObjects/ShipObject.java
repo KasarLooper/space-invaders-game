@@ -9,16 +9,19 @@ import com.mygdx.game.GameSettings;
 public class ShipObject extends GameObject {
     private int hp;
     private long lastShootTime;
+    private long startShootFasterTime;
+    private boolean isShootFaster;
 
     public ShipObject(int x, int y, int width, int height, String texturePath, World world, short cBits) {
         super(x, y, width, height, texturePath, world, cBits);
         body.setLinearDamping(10);
         hp = 3;
+        isShootFaster = false;
     }
 
     @Override
     public void hit(GameObject other) {
-        hp--;
+        if (other instanceof TrashObject) hp--;
     }
 
     public boolean isAlive() {
@@ -26,7 +29,10 @@ public class ShipObject extends GameObject {
     }
 
     public boolean needToShoot() {
-        if (TimeUtils.millis() - lastShootTime >= GameSettings.SHOOTING_COOL_DOWN) {
+        long shootingCoolDown = GameSettings.SHOOTING_COOL_DOWN;
+        if (TimeUtils.millis() - startShootFasterTime >= GameSettings.SHOOT_FASTER_TIME) isShootFaster = false;
+        if (isShootFaster) shootingCoolDown /= 3;
+        if (TimeUtils.millis() - lastShootTime >= shootingCoolDown) {
             lastShootTime = TimeUtils.millis();
             return true;
         }
@@ -60,5 +66,14 @@ public class ShipObject extends GameObject {
             setX(GameSettings.SCREEN_WIDTH);
         if (getX() > (GameSettings.SCREEN_WIDTH + width / 2f))
             setX(0);
+    }
+
+    public void hill() {
+        hp = Math.min(hp + 1, GameSettings.MAX_HP);
+    }
+
+    public void shootFaster() {
+        startShootFasterTime = TimeUtils.millis();
+        isShootFaster = true;
     }
 }
