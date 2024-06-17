@@ -13,7 +13,7 @@ public class TextView extends View {
         this.font = font;
     }
 
-    public TextView(BitmapFont font, int x, int y, String text) {
+    public TextView(BitmapFont font, float x, float y, String text) {
         this(font, x, y);
         this.text = text;
 

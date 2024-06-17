@@ -53,6 +53,7 @@ public class GameScreen extends ScreenAdapter {
     TextView pauseTextView;
 
     TextView recordsTextView;
+    TextView levelTextView;
     RecordsListView tableRecords;
     ButtonView homeButton2;
 
@@ -80,6 +81,7 @@ public class GameScreen extends ScreenAdapter {
         pauseTextView = new TextView(game.getBigWhiteFont(), 280, 860, "Pause");
 
         recordsTextView = new TextView(game.getBigWhiteFont(), 210, 960, "Last records");
+        levelTextView = new TextView(game.getWhiteFont(), 300, 880);
         tableRecords = new RecordsListView(game.getWhiteFont(), 800);
         homeButton2 = new ButtonView(280, 400, 160, 80, GameResources.SHORT_BUTTON_IMG_PATH, "Home", game.getBlackFont());
     }
@@ -87,6 +89,7 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void show() {
         session.startGame();
+        ship.initHP();
     }
 
     @Override
@@ -110,8 +113,9 @@ public class GameScreen extends ScreenAdapter {
         }
 
         if (!ship.isAlive()) {
-            session.endGame(score);
-            tableRecords.setRecords(MemoryManager.loadTableRecords());
+            levelTextView.setText("Level: " + game.getDifficultLevel());
+            session.endGame(score, game.getDifficultLevel());
+            tableRecords.setRecords(MemoryManager.loadTableRecords(game.getDifficultLevel()));
         }
 
         updateFlyDownObjects();
@@ -167,6 +171,7 @@ public class GameScreen extends ScreenAdapter {
         if (session.getState() == GameState.ENDED) {
             fullBlackoutView.draw(batch);
             recordsTextView.draw(batch);
+            levelTextView.draw(batch);
             tableRecords.draw(batch);
             homeButton2.draw(batch);
         }
@@ -195,6 +200,7 @@ public class GameScreen extends ScreenAdapter {
         pauseTextView.dispose();
 
         recordsTextView.dispose();
+        levelTextView.dispose();
         tableRecords.dispose();
         homeButton2.dispose();
     }
@@ -219,7 +225,7 @@ public class GameScreen extends ScreenAdapter {
                     if (continueButton.isHit(touch.x, touch.y))
                         session.resumeGame();
                     if (homeButton.isHit(touch.x, touch.y)) {
-                        session.endGame(score);
+                        session.endGame(score, game.getDifficultLevel());
                         game.returnToMainMenu();
                     }
                 }

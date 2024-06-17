@@ -18,6 +18,8 @@ public class GameResources {
     public static final String DESTROY_SOUND_PATH = "sounds/destroy.mp3";
     public static final String MEDICINE_IMG_PATH = "textures/medicine.png";
     public static final String GUN_IMG_PATH = "textures/gun.png";
+    public static final String PLUS_IMG_PATH = "textures/plus.png";
+    public static final String MINUS_IMG_PATH = "textures/minus.png";
 
     private GameResources() {}
 }

@@ -26,15 +26,10 @@ public class GameSettings {
     public static final int GUN_HEIGHT = 60;
     // Speed settings
     public static final float SHIP_FORCE_RATIO = 0.023f;
-    public static final float TRASH_VELOCITY = 5f;
-    public static final int BULLET_VELOCITY = 8;
     public static final int BACKGROUND_SPEED = 4;
     // Timing settings
-    public static final long SHOOTING_COOL_DOWN = 400;
-    public static final long STARTING_TRASH_APPEARANCE_COOL_DOWN = 2000;
     public static final int FREEZE_HANDLE_INPUT_TIME = 100;
     // Player help settings
-    public static final int MAX_HP = 5;
     public static final int SHOOT_FASTER_TIME = 5_000;
 
     private GameSettings() {}

@@ -28,7 +28,7 @@ public class MyGdxGame extends Game {
 	BitmapFont bigWhiteFont;
 	BitmapFont blackFont;
 	AudioManager audioManager;
-	
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -43,13 +43,13 @@ public class MyGdxGame extends Game {
 		world = new World(new Vector2(0f, 0f), true);
 		world.setContactListener(new ContactManager());
 
-		gameScreen = new GameScreen(this);
 		mainMenuScreen = new MainMenuScreen(this);
+		gameScreen = new GameScreen(this);
 		settingsScreen = new SettingsScreen(this);
 
 		setScreen(mainMenuScreen);
 	}
-	
+
 	@Override
 	public void dispose () {
 		batch.dispose();
@@ -73,6 +73,7 @@ public class MyGdxGame extends Game {
 	}
 
 	public void exit() {
+		MemoryManager.saveDifficultLevel(mainMenuScreen.getDifficultLevel());
 		Gdx.app.exit();
 	}
 
@@ -114,5 +115,9 @@ public class MyGdxGame extends Game {
 
 	public AudioManager getAudioManager() {
 		return audioManager;
+	}
+
+	public int getDifficultLevel() {
+		return mainMenuScreen.getDifficultLevel();
 	}
 }

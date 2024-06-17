@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.DifficultSettings;
 import com.mygdx.game.GameSettings;
 
 public class ShipObject extends GameObject {
@@ -15,8 +16,11 @@ public class ShipObject extends GameObject {
     public ShipObject(int x, int y, int width, int height, String texturePath, World world, short cBits) {
         super(x, y, width, height, texturePath, world, cBits);
         body.setLinearDamping(10);
-        hp = 3;
         isShootFaster = false;
+    }
+
+    public void initHP() {
+        hp = DifficultSettings.getStartHP();
     }
 
     @Override
@@ -29,7 +33,7 @@ public class ShipObject extends GameObject {
     }
 
     public boolean needToShoot() {
-        long shootingCoolDown = GameSettings.SHOOTING_COOL_DOWN;
+        long shootingCoolDown = DifficultSettings.getShootingCoolDown();
         if (TimeUtils.millis() - startShootFasterTime >= GameSettings.SHOOT_FASTER_TIME) isShootFaster = false;
         if (isShootFaster) shootingCoolDown /= 3;
         if (TimeUtils.millis() - lastShootTime >= shootingCoolDown) {
@@ -69,7 +73,7 @@ public class ShipObject extends GameObject {
     }
 
     public void hill() {
-        hp = Math.min(hp + 1, GameSettings.MAX_HP);
+        hp = Math.min(hp + 1, DifficultSettings.getMaxHP());
     }
 
     public void shootFaster() {

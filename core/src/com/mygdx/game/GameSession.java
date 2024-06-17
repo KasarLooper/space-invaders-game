@@ -15,7 +15,7 @@ public class GameSession {
     public void startGame() {
         state = GameState.PLAYING;
         sessionStartTime = TimeUtils.millis();
-        nextTrashSpawnTime = sessionStartTime + GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN;
+        nextTrashSpawnTime = sessionStartTime + DifficultSettings.getStartingTrashAppearanceCoolDown();
     }
 
     public boolean isFreezeInput() {
@@ -34,9 +34,9 @@ public class GameSession {
         nextTrashSpawnTime += TimeUtils.millis() - sessionPauseTime;
     }
 
-    public void endGame(int score) {
+    public void endGame(int score, int level) {
         state = GameState.ENDED;
-        ArrayList<Integer> table = MemoryManager.loadTableRecords();
+        ArrayList<Integer> table = MemoryManager.loadTableRecords(level);
         boolean isAdd = false;
         if (score == 0) {
             isAdd = true;
@@ -54,12 +54,12 @@ public class GameSession {
 
         while (table.size() > 5)
             table.remove(table.size() - 1);
-        MemoryManager.saveTableRecords(table);
+        MemoryManager.saveTableRecords(table, level);
     }
 
     public boolean shouldSpawnTrash() {
         if (TimeUtils.millis() >= nextTrashSpawnTime) {
-            nextTrashSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN * getTrashPeriodCoolDown());
+            nextTrashSpawnTime = TimeUtils.millis() + (long) (DifficultSettings.getStartingTrashAppearanceCoolDown() * getTrashPeriodCoolDown());
             return true;
         }
         return false;

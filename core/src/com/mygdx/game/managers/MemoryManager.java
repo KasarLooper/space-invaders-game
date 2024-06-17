@@ -26,22 +26,33 @@ public class MemoryManager {
         preferences.flush();
     }
 
-    public static void saveTableRecords(ArrayList<Integer> table) {
+    public static void saveTableRecords(ArrayList<Integer> table, int level) {
         Json json = new Json();
         String tableString = json.toJson(table);
-        preferences.putString("table", tableString);
+        preferences.putString("table" + level, tableString);
         preferences.flush();
     }
 
     public static void clearRecords() {
-        saveTableRecords(new ArrayList<>());
+        for (int i = 1; i <= 5; i++)
+            saveTableRecords(new ArrayList<>(), i);
     }
 
-    public static ArrayList<Integer> loadTableRecords() {
+    public static ArrayList<Integer> loadTableRecords(int level) {
         if (!preferences.contains("table")) return new ArrayList<>();
         Json json = new Json();
-        String tableString = preferences.getString("table");
+        String tableString = preferences.getString("table" + level);
         if (tableString.equals("")) return new ArrayList<>();
         return json.fromJson(ArrayList.class, tableString);
+    }
+
+    public static int loadDifficultLevel() {
+        if (!preferences.contains("level")) return 1;
+        return preferences.getInteger("level");
+    }
+
+    public static void saveDifficultLevel(int level) {
+        preferences.putInteger("level", level);
+        preferences.flush();
     }
 }
