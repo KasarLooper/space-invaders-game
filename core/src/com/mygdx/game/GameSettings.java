@@ -32,5 +32,7 @@ public class GameSettings {
     // Player help settings
     public static final int SHOOT_FASTER_TIME = 5_000;
 
+    public static final int BOUND = 8;
+
     private GameSettings() {}
 }

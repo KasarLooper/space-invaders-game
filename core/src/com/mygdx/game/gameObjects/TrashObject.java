@@ -7,12 +7,16 @@ public class TrashObject extends FlyDownObject {
         super(width, height, texturePath, world, cBits);
     }
 
+    public TrashObject(int x, int y, int width, int height, String texturePath, World world, short cBits) {
+        super(x, y, width, height, texturePath, world, cBits);
+    }
+
     @Override
     public void hit(GameObject other) {
         if (other instanceof ShipObject) {
             hp = 0;
             hasPoints = false;
         }
-        else hp--;
+        else if (other instanceof BulletObject) hp--;
     }
 }

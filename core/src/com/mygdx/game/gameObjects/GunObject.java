@@ -15,9 +15,9 @@ public class GunObject extends PlayerHelpObject {
     @Override
     public void hit(GameObject other) {
         hp--;
-        if (other instanceof ShipObject) {
-            ShipObject ship = (ShipObject) other;
-            ship.shootFaster();
+        if (other instanceof AbleToUseHelpObjects) {
+            AbleToUseHelpObjects shootable = (AbleToUseHelpObjects) other;
+            shootable.shootFaster();
         }
     }
 }

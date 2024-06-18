@@ -15,9 +15,9 @@ public class MedicineObject extends PlayerHelpObject {
     @Override
     public void hit(GameObject other) {
         hp--;
-        if (other instanceof ShipObject) {
-            ShipObject ship = (ShipObject) other;
-            ship.hill();
+        if (other instanceof AbleToUseHelpObjects) {
+            AbleToUseHelpObjects hillable = (AbleToUseHelpObjects) other;
+            hillable.hill();
         }
     }
 }

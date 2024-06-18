@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
 public class PlayerHelpObject extends FlyDownObject {
-    private static int paddingPlayer = 200;
+    private static int paddingPlayer = 75;
     private static int paddingHorizontal = 75;
 
     public PlayerHelpObject(int width, int height, String texturePath, World world, short cBits, int playerX) {

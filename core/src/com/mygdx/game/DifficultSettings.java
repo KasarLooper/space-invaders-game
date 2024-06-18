@@ -31,4 +31,22 @@ public class DifficultSettings {
     public static int getMaxHP() {
         return difficultLevel < 3 ? 5 : getStartHP() + 1;
     }
+
+    // Boss settings
+
+    public static float getEnemyBulletVelocity() {
+        return 9f / (6 - difficultLevel);
+    }
+
+    public static int getEnemyHP() {
+        return 4 + difficultLevel * 2;
+    }
+
+    public static int getMaxEnemyHP() {
+        return getEnemyHP();
+    }
+
+    public static int getEnemyShootingCoolDown() {
+        return 900 - 100 * difficultLevel;
+    }
 }

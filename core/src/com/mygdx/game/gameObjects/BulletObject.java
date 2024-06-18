@@ -8,9 +8,12 @@ import com.mygdx.game.GameSettings;
 public class BulletObject extends GameObject {
     private boolean wasHit;
 
-    public BulletObject(int x, int y, int width, int height, String texturePath, World world, short cBits) {
+    public BulletObject(int x, int y, int width, int height, String texturePath, World world, short cBits, boolean isEnemy) {
         super(x, y, width, height, texturePath, world, cBits);
-        body.setLinearVelocity(new Vector2(0, DifficultSettings.getBulletVelocity()));
+        float speed;
+        if (isEnemy) speed = -DifficultSettings.getEnemyBulletVelocity();
+        else speed = DifficultSettings.getBulletVelocity();
+        body.setLinearVelocity(new Vector2(0, speed));
         wasHit = false;
     }
 

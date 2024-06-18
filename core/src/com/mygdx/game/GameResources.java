@@ -5,6 +5,7 @@ public class GameResources {
     public static final String SHIP_IMG_PATH = "textures/ship.png";
     public static final String TRASH_IMG_PATH = "textures/trash.png";
     public static final String BULLET_ING_PATH = "textures/bullet.png";
+    public static final String ENEMY_BULLET_IMG_PATH = "textures/enemy_bullet.png";
     public static final String BACKGROUND_IMG_PATH = "textures/background.png";
     public static final String BLACKOUT_TOP_IMG_PATH = "textures/blackout_top.png";
     public static final String BLACKOUT_FULL_ING_PATH = "textures/blackout_full.png";
@@ -20,6 +21,7 @@ public class GameResources {
     public static final String GUN_IMG_PATH = "textures/gun.png";
     public static final String PLUS_IMG_PATH = "textures/plus.png";
     public static final String MINUS_IMG_PATH = "textures/minus.png";
+    public static final String ENEMY_SHIP_IMG_PATH = "textures/enemy_ship.png";
 
     private GameResources() {}
 }

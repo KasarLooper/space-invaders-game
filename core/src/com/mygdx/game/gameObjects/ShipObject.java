@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.DifficultSettings;
 import com.mygdx.game.GameSettings;
 
-public class ShipObject extends GameObject {
+public class ShipObject extends GameObject implements AbleToUseHelpObjects {
     private int hp;
     private long lastShootTime;
     private long startShootFasterTime;
@@ -25,7 +25,7 @@ public class ShipObject extends GameObject {
 
     @Override
     public void hit(GameObject other) {
-        if (other instanceof TrashObject) hp--;
+        if (other instanceof TrashObject || other instanceof BulletObject) hp--;
     }
 
     public boolean isAlive() {
@@ -72,10 +72,12 @@ public class ShipObject extends GameObject {
             setX(0);
     }
 
+    @Override
     public void hill() {
         hp = Math.min(hp + 1, DifficultSettings.getMaxHP());
     }
 
+    @Override
     public void shootFaster() {
         startShootFasterTime = TimeUtils.millis();
         isShootFaster = true;

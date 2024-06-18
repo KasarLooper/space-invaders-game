@@ -17,6 +17,7 @@ import com.mygdx.game.UIObjects.ImageView;
 import com.mygdx.game.UIObjects.MovingBackgroundView;
 import com.mygdx.game.UIObjects.RecordsListView;
 import com.mygdx.game.UIObjects.TextView;
+import com.mygdx.game.gameObjects.BossObject;
 import com.mygdx.game.gameObjects.BulletObject;
 import com.mygdx.game.UIObjects.LineView;
 import com.mygdx.game.gameObjects.FlyDownObject;
@@ -33,6 +34,8 @@ import java.util.Random;
 
 public class GameScreen extends ScreenAdapter {
     int score = 0;
+    boolean isBossAlive = false;
+    BossObject boss;
     SpriteBatch batch;
     MyGdxGame game;
     GameSession session;
@@ -105,12 +108,22 @@ public class GameScreen extends ScreenAdapter {
             flyDownArray.add(getFlyDownObject());
 
         if (ship.needToShoot()) {
-            BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2,
+            BulletObject bulletObject = new BulletObject(ship.getX(), ship.getY() + GameSettings.SHIP_HEIGHT / 2 + 50,
                     GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.BULLET_ING_PATH, game.getWorld(),
-                    GameSettings.BULLET_BIT);
+                    GameSettings.BULLET_BIT, false);
             bulletArray.add(bulletObject);
             game.getAudioManager().shoot();
         }
+
+        if (isBossAlive && boss.needToShoot()) {
+            BulletObject bulletObject = new BulletObject(boss.getX(), boss.getY() - GameSettings.SHIP_HEIGHT / 2 - 50,
+                    GameSettings.BULLET_WIDTH, GameSettings.BULLET_HEIGHT, GameResources.ENEMY_BULLET_IMG_PATH, game.getWorld(),
+                    GameSettings.BULLET_BIT, true);
+            bulletArray.add(bulletObject);
+            game.getAudioManager().shoot();
+        }
+
+        if (isBossAlive) boss.move(ship.getX());
 
         if (!ship.isAlive()) {
             levelTextView.setText("Level: " + game.getDifficultLevel());
@@ -126,9 +139,11 @@ public class GameScreen extends ScreenAdapter {
     }
 
     Random rd = new Random();
+    int bound;
 
     private FlyDownObject getFlyDownObject() {
-        int n = rd.nextInt(6);
+        if (!isBossAlive) bound = GameSettings.BOUND;
+        int n = rd.nextInt(bound);
         switch (n) {
             case 0:
                 return new MedicineObject(GameSettings.MEDICINE_WIDTH, GameSettings.MEDICINE_HEIGHT,
@@ -136,9 +151,17 @@ public class GameScreen extends ScreenAdapter {
             case 1:
                 return new GunObject(GameSettings.GUN_WIDTH, GameSettings.GUN_HEIGHT,
                         GameResources.GUN_IMG_PATH, game.getWorld(), GameSettings.FLY_DOWN_OBJECT_BIT, ship.getX());
-            default:
+            case 2: {
+                bound = 2;
+                isBossAlive = true;
+                boss = new BossObject(GameSettings.SHIP_WIDTH, GameSettings.SHIP_HEIGHT, GameResources.ENEMY_SHIP_IMG_PATH, game.getWorld(),
+                        GameSettings.FLY_DOWN_OBJECT_BIT);
+                return boss;
+            }
+            default: {
                 return new TrashObject(GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
                         GameResources.TRASH_IMG_PATH, game.getWorld(), GameSettings.FLY_DOWN_OBJECT_BIT);
+            }
         }
     }
 
@@ -257,6 +280,8 @@ public class GameScreen extends ScreenAdapter {
         bulletArray = new ArrayList<>();
         session = new GameSession();
         score = 0;
+        bound = GameSettings.BOUND;
+        isBossAlive = false;
         scoreTextView.setText("Score: " + score);
     }
 
@@ -269,6 +294,10 @@ public class GameScreen extends ScreenAdapter {
                     score += current.getPoints();
                     scoreTextView.setText("Score: " + score);
                     game.getAudioManager().explode();
+                    if (current instanceof BossObject) {
+                        bound = GameSettings.BOUND;
+                        isBossAlive = false;
+                    }
                 }
                 game.getWorld().destroyBody(current.getBody());
                 iterator.remove();
