@@ -80,4 +80,12 @@ public class GameObject {
     public Body getBody() {
         return body;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

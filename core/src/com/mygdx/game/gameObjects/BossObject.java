@@ -1,9 +1,12 @@
 package com.mygdx.game.gameObjects;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.game.DifficultSettings;
+import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSettings;
 
 import java.util.Random;
@@ -13,6 +16,10 @@ public class BossObject extends TrashObject implements AbleToUseHelpObjects {
     private long lastShootTime;
     private long startShootFasterTime;
     private boolean isShootFaster;
+    private int leftRedFrames;
+    private int leftGreenFrames;
+    private Texture red;
+    private Texture green;
 
     public BossObject(int width, int height, String texturePath, World world, short cBits) {
         super(width / 2 + paddingHorizontal + (new Random()).nextInt((GameSettings.SCREEN_WIDTH - 2 * paddingHorizontal - width)),
@@ -22,6 +29,10 @@ public class BossObject extends TrashObject implements AbleToUseHelpObjects {
         hasPoints = true;
         hp = DifficultSettings.getEnemyHP();
         points = 5;
+        leftRedFrames = -1;
+        leftGreenFrames = -1;
+        red = new Texture(GameResources.ENEMY_SHIP_RED_IMG_PATH);
+        green = new Texture(GameResources.ENEMY_SHIP_GREEN_IMG_PATH);
     }
 
     public boolean needToShoot() {
@@ -36,19 +47,42 @@ public class BossObject extends TrashObject implements AbleToUseHelpObjects {
     }
 
     @Override
+    public void draw(Batch batch) {
+        if (leftRedFrames >= 0) batch.draw(red, getX() - width / 2f, getY() - height / 2f, width, height);
+        else if (leftGreenFrames >= 0) batch.draw(green, getX() - width / 2f, getY() - height / 2f, width, height);
+        else super.draw(batch);
+    }
+
+    public void updateTexture() {
+        leftRedFrames--;
+        leftGreenFrames--;
+    }
+
+    @Override
     public void hit(GameObject other) {
         super.hit(other);
+        if (other instanceof BulletObject) {
+            leftRedFrames = GameSettings.BACKLIGHT_FRAMES;
+            leftGreenFrames = -1;
+        }
+    }
+
+    private void backLightGreen() {
+        leftGreenFrames = GameSettings.BACKLIGHT_FRAMES;
+        leftRedFrames = -1;
     }
 
     @Override
     public void hill() {
         hp = Math.min(DifficultSettings.getMaxEnemyHP(), hp + 1);
+        backLightGreen();
     }
 
     @Override
     public void shootFaster() {
         startShootFasterTime = TimeUtils.millis();
         isShootFaster = true;
+        backLightGreen();
     }
 
     private static Random rd = new Random();

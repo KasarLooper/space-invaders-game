@@ -31,8 +31,12 @@ public class GameSettings {
     public static final int FREEZE_HANDLE_INPUT_TIME = 100;
     // Player help settings
     public static final int SHOOT_FASTER_TIME = 5_000;
-
+    // Spawn settings
     public static final int BOUND = 8;
+    // Animation settings
+    public static final int NUMBER_OF_EXPLOSION_FRAMES = 16;
+    public static final int FRAME_DURATION = 2;
+    public static final int BACKLIGHT_FRAMES = 10;
 
     private GameSettings() {}
 }

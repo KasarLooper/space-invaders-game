@@ -18,6 +18,7 @@ public class MedicineObject extends PlayerHelpObject {
         if (other instanceof AbleToUseHelpObjects) {
             AbleToUseHelpObjects hillable = (AbleToUseHelpObjects) other;
             hillable.hill();
+            isHelped = true;
         }
     }
 }

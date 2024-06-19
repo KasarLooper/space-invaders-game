@@ -6,9 +6,11 @@ import com.mygdx.game.GameSettings;
 public class PlayerHelpObject extends FlyDownObject {
     private static int paddingPlayer = 75;
     private static int paddingHorizontal = 75;
+    protected boolean isHelped;
 
     public PlayerHelpObject(int width, int height, String texturePath, World world, short cBits, int playerX) {
         super(getRandomX(playerX), GameSettings.SCREEN_HEIGHT + height / 2, width, height, texturePath, world, cBits);
+        isHelped = false;
     }
 
     private static int getRandomX(int playerX) {
@@ -28,5 +30,9 @@ public class PlayerHelpObject extends FlyDownObject {
             right = GameSettings.SCREEN_WIDTH - paddingHorizontal;
         }
         return left + random.nextInt(right - left);
+    }
+
+    public boolean isHelped() {
+        return isHelped;
     }
 }

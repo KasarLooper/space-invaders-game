@@ -18,6 +18,7 @@ public class GunObject extends PlayerHelpObject {
         if (other instanceof AbleToUseHelpObjects) {
             AbleToUseHelpObjects shootable = (AbleToUseHelpObjects) other;
             shootable.shootFaster();
+            isHelped = true;
         }
     }
 }

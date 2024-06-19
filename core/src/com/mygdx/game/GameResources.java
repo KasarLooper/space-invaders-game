@@ -22,6 +22,11 @@ public class GameResources {
     public static final String PLUS_IMG_PATH = "textures/plus.png";
     public static final String MINUS_IMG_PATH = "textures/minus.png";
     public static final String ENEMY_SHIP_IMG_PATH = "textures/enemy_ship.png";
+    public static final String EXPLOSION_FRAME_PATH_PATTERN = "textures/explosion_frames/exp_%d.png";
+    public static final String SHIP_RED_IMG_PATH = "textures/ship_red.png";
+    public static final String SHIP_GREEN_IMG_PATH = "textures/ship_green.png";
+    public static final String ENEMY_SHIP_RED_IMG_PATH = "textures/enemy_ship_red.png";
+    public static final String ENEMY_SHIP_GREEN_IMG_PATH = "textures/enemy_ship_green.png";
 
     private GameResources() {}
 }

@@ -20,10 +20,12 @@ import com.mygdx.game.UIObjects.TextView;
 import com.mygdx.game.gameObjects.BossObject;
 import com.mygdx.game.gameObjects.BulletObject;
 import com.mygdx.game.UIObjects.LineView;
+import com.mygdx.game.gameObjects.ExplosionObject;
 import com.mygdx.game.gameObjects.FlyDownObject;
 import com.mygdx.game.gameObjects.GameObject;
 import com.mygdx.game.gameObjects.GunObject;
 import com.mygdx.game.gameObjects.MedicineObject;
+import com.mygdx.game.gameObjects.PlayerHelpObject;
 import com.mygdx.game.gameObjects.ShipObject;
 import com.mygdx.game.gameObjects.TrashObject;
 import com.mygdx.game.managers.MemoryManager;
@@ -43,6 +45,7 @@ public class GameScreen extends ScreenAdapter {
     ShipObject ship;
     ArrayList<FlyDownObject> flyDownArray;
     ArrayList<BulletObject> bulletArray;
+    ExplosionObject explosion;
 
     MovingBackgroundView backgroundView;
     ImageView topBlackoutView;
@@ -70,6 +73,7 @@ public class GameScreen extends ScreenAdapter {
                 GameResources.SHIP_IMG_PATH, game.getWorld(), GameSettings.SHIP_BIT);
         flyDownArray = new ArrayList<>();
         bulletArray = new ArrayList<>();
+        explosion = new ExplosionObject();
 
         backgroundView = new MovingBackgroundView(GameSettings.BACKGROUND_SPEED, GameResources.BACKGROUND_IMG_PATH);
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
@@ -100,6 +104,8 @@ public class GameScreen extends ScreenAdapter {
         handleInput();
         if (session.getState() == GameState.PLAYING)
             updateObjects();
+        if (!explosion.isEnd())
+            explosion.nextFrame();
         draw();
     }
 
@@ -126,6 +132,7 @@ public class GameScreen extends ScreenAdapter {
         if (isBossAlive) boss.move(ship.getX());
 
         if (!ship.isAlive()) {
+            explosion.explode(ship.getX() - ship.getWidth() / 2, ship.getY() - ship.getHeight() / 2, ship.getWidth(), ship.getHeight());
             levelTextView.setText("Level: " + game.getDifficultLevel());
             session.endGame(score, game.getDifficultLevel());
             tableRecords.setRecords(MemoryManager.loadTableRecords(game.getDifficultLevel()));
@@ -136,6 +143,8 @@ public class GameScreen extends ScreenAdapter {
         game.stepWorld();
         lineView.setHp(ship.getHp());
         backgroundView.move();
+        ship.updateTexture();
+        if (isBossAlive) boss.updateTexture();
     }
 
     Random rd = new Random();
@@ -173,12 +182,14 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
 
         backgroundView.draw(batch);
+        explosion.draw(batch);
         topBlackoutView.draw(batch);
         lineView.draw(batch);
         scoreTextView.draw(batch);
         playButtonView.draw(batch);
 
-        ship.draw(batch);
+        if (session.getState() != GameState.ENDED)
+            ship.draw(batch);
         for (FlyDownObject object : flyDownArray)
             object.draw(batch);
         for (BulletObject bullet : bulletArray)
@@ -191,7 +202,7 @@ public class GameScreen extends ScreenAdapter {
             pauseTextView.draw(batch);
         }
 
-        if (session.getState() == GameState.ENDED) {
+        if (session.getState() == GameState.ENDED && explosion.isEnd()) {
             fullBlackoutView.draw(batch);
             recordsTextView.draw(batch);
             levelTextView.draw(batch);
@@ -283,6 +294,7 @@ public class GameScreen extends ScreenAdapter {
         bound = GameSettings.BOUND;
         isBossAlive = false;
         scoreTextView.setText("Score: " + score);
+        explosion.update();
     }
 
     private void updateFlyDownObjects() {
@@ -293,10 +305,17 @@ public class GameScreen extends ScreenAdapter {
                 if (!current.isAlive()) {
                     score += current.getPoints();
                     scoreTextView.setText("Score: " + score);
-                    game.getAudioManager().explode();
-                    if (current instanceof BossObject) {
-                        bound = GameSettings.BOUND;
-                        isBossAlive = false;
+                    if (current instanceof TrashObject) {
+                        explosion.explode(current.getX() - current.getWidth() / 2, current.getY() - current.getHeight() / 2, current.getWidth(), current.getHeight());
+                        game.getAudioManager().explode();
+                        if (current instanceof BossObject) {
+                            bound = GameSettings.BOUND;
+                            isBossAlive = false;
+                        }
+                    } else if (!((PlayerHelpObject) current).isHelped()) {
+                        explosion.explode(current.getX() - current.getWidth() / 2, current.getY() - current.getHeight() / 2,
+                                current.getWidth(), current.getHeight());
+                        game.getAudioManager().explode();
                     }
                 }
                 game.getWorld().destroyBody(current.getBody());
