@@ -237,6 +237,7 @@ public class GameScreen extends ScreenAdapter {
         levelTextView.dispose();
         tableRecords.dispose();
         homeButton2.dispose();
+        explosion.dispose();
     }
 
     private void handleInput() {
