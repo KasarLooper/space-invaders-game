@@ -45,6 +45,10 @@ public class ExplosionObject {
         }
     }
 
+    public void dispose() {
+        for (Texture frame : frames) frame.dispose();
+    }
+
     private static class ExplosionInfo {
         public Texture[] frames;
         public int currentFrame;
